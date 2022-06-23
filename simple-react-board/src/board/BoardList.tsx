@@ -6,14 +6,21 @@ import Button from 'react-bootstrap/Button';
 import axios from "axios";
 /* import bootstrap : E */
 
+import config from '../config/config';
+
 const Board = ({
   id,
   title,
+  content,
+  //pwd,
   registerId,
   registerDate,
+
 }: {
   id: number;
   title: string;
+  content: string;
+  //pwd: string;
   registerId: string;
   registerDate: string;
 }) => {
@@ -24,6 +31,7 @@ const Board = ({
       </td>
       <td>{id}</td>
       <td>{title}</td>
+      <td>{content}</td>
       <td>{registerId}</td>
       <td>{registerDate}</td>
     </tr>
@@ -35,8 +43,14 @@ class BoardList extends Component {
     boardList: [],
   }
 
+  /**
+   * 데이터를 받아오는 부분
+   * 
+   * @author yjj
+   * @since 2022-06-23
+   */
   getList = () => {
-    axios.get("http://localhost:8000/list", {})
+    axios.get(config.BaseUrl)
     .then((res) => {
         const { data } = res;
         this.setState({
@@ -63,6 +77,8 @@ class BoardList extends Component {
               <th>선택</th>
               <th>번호</th>
               <th>제목</th>
+              <th>내용</th>
+              {/*<th>비밀번호</th>*/}
               <th>작성자</th>
               <th>작성일</th>
             </tr>
@@ -75,8 +91,10 @@ class BoardList extends Component {
                   <Board
                     id={v.BOARD_ID}
                     title={v.BOARD_TITLE}
+                    content={v.BOARD_CONTENT}
+                    //pwd={v.BOARD_PWD}
                     registerId={v.REGISTER_ID}
-                    registerDate={v.REGISTER_DATE}
+                    registerDate={v.REGISTER_TIME}
                     key={v.BOARD_ID}
                   />
                 );
