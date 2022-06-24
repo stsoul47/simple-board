@@ -15,6 +15,7 @@ const Board = ({
   //pwd,
   registerId,
   registerDate,
+  props,
 
 }: {
   id: number;
@@ -23,11 +24,18 @@ const Board = ({
   //pwd: string;
   registerId: string;
   registerDate: string;
+  props: any;
 }) => {
   return (
     <tr>
       <td>
-        <input type="checkbox"></input>
+        <input
+          type="checkbox"
+          value={id}
+          onChange={(e) => {
+            props.onCheckboxChange(e.currentTarget.checked, e.currentTarget.value);
+          }}
+        ></input>
       </td>
       <td>{id}</td>
       <td>{title}</td>
@@ -38,10 +46,25 @@ const Board = ({
   );
 };
 
-class BoardList extends Component {
+interface IProps {
+  isComplete: boolean;
+  handleModify: any;
+  renderComplete: any;
+}
+
+class BoardList extends Component<IProps> {
+  constructor(props: any) {
+    super(props);
+    this.state = {
+      boardList: [],
+      checkList: [],
+    };
+  }
+
   state = {
     boardList: [],
-  }
+    checkList: [],
+  };
 
   /**
    * 데이터를 받아오는 부분
@@ -51,19 +74,40 @@ class BoardList extends Component {
    */
   getList = () => {
     axios.get(config.BaseUrl)
-    .then((res) => {
+      .then((res) => {
         const { data } = res;
         this.setState({
-            boardList: data,
+          boardList: data,
         });
-    })
-    .catch((e) => {
+        this.props.renderComplete();
+      })
+      .catch((e) => {
         console.error(e);
+      });
+  };
+
+  onCheckboxChange = (checked: boolean, id: any) => {
+    const list: Array<string> = this.state.checkList.filter((v) => {
+      return v != id;
+    });
+
+    if (checked) {
+      list.push(id);
+    }
+
+    this.setState({
+      checkList: list,
     });
   };
 
-  componentDidMount(){
+  componentDidMount() {
     this.getList();
+  }
+
+  componentDidUpdate() {
+    if(!this.props.isComplete) {
+      this.getList();
+    }
   }
 
   render(): ReactNode {
@@ -96,13 +140,19 @@ class BoardList extends Component {
                     registerId={v.REGISTER_ID}
                     registerDate={v.REGISTER_TIME}
                     key={v.BOARD_ID}
+                    props={this}
                   />
                 );
               })}
           </tbody>
         </Table>
         <Button variant="info">글쓰기</Button>
-        <Button variant="secondary">수정하기</Button>
+        <Button 
+          variant="secondary"
+          onClick={()=>{
+            this.props.handleModify(this.state.checkList);
+          }}
+        >수정하기</Button>
         <Button variant="danger">삭제하기</Button>
       </div>
     );
