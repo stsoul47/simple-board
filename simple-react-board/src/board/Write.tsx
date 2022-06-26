@@ -5,6 +5,8 @@ import Button from 'react-bootstrap/Button';
 
 import axios from 'axios';
 import config from '../config/config'
+import Reply from "./Reply";
+// import { ListGroup } from "react-bootstrap";
 /* import bootstrap : E */
 interface IProps {
   isModifyMode: boolean;
@@ -23,19 +25,31 @@ class Write extends Component<IProps> {
       content: "",
       isModifyMode: false,
       password: '',
+      registerId: '',
+      replyList: [],
     }
   }
   state = {
     isModifyMode: false,
     title: '',
     content: '',
-    password: ''
+    password: '',
+    registerId: '',
+    replyList: [],
   }
 
   write = () => {
-    axios.post(config.BaseUrl)
+    axios.post(config.BaseUrl + "add-board", {
+      BOARD_TITLE: this.state.title,
+      BOARD_CONTENT: this.state.content,
+      BOARD_PWD: this.state.password,
+      REGISTER_ID: this.state.registerId,
+    })
       .then((res) => {
         console.log("[Write write] ", res);
+        this.setState({
+          isModifyMode: false,
+        })
       })
       .catch((error) => {
         console.error(error);
@@ -51,6 +65,9 @@ class Write extends Component<IProps> {
     })
       .then((res) => {
         console.log("[Write update] ", res);
+        this.setState({
+          isModifyMode: false,
+        })
       })
       .catch((error) => {
         console.error(error);
@@ -58,12 +75,15 @@ class Write extends Component<IProps> {
   }
 
   detail = () => {
-    axios.get(`http://localhost:8000/detail?id=${this.props.boardId}`)
+    axios.get(config.BaseUrl + "detail?BOARD_ID=" + this.props.boardId)
       .then((res) => {
-        if (res.data.length > 0) {
+        console.log("[Write Detail ]", res.data.reply);
+        if (res.data.board.length > 0) {
           this.setState({
-            title: res.data[0].BOARD_TITLE,
-            content: res.data[0].BOARD_CONTENT,
+            title: res.data.board[0].BOARD_TITLE,
+            content: res.data.board[0].BOARD_CONTENT,
+            registerId: res.data.board[0].REGISTER_ID,
+            replyList: res.data.reply,
           });
         }
       })
@@ -80,14 +100,29 @@ class Write extends Component<IProps> {
 
   componentDidUpdate = (prevProps: any) => {
     if (this.props.isModifyMode && this.props.boardId != prevProps.boardId) {
+      this.setState({
+        isModifyMode: true,
+      })
       this.detail();
     }
   }
 
   render(): ReactNode {
+    const { replyList }: { replyList: any } = this.state;
     return (
       <div>
         <Form>
+          <Form.Group className="mb-3">
+            <Form.Label>제목</Form.Label>
+            <Form.Control
+              as="textarea"
+              name="title"
+              value={this.state.title}
+              onChange={this.handleChange}
+              placeholder="제목을 입력하세요"
+              disabled={this.state.isModifyMode ? true : false}
+            />
+          </Form.Group>
           <Form.Group className="mb-3">
             <Form.Label>내용</Form.Label>
             <Form.Control
@@ -96,6 +131,16 @@ class Write extends Component<IProps> {
               value={this.state.content}
               onChange={this.handleChange}
               placeholder="내용을 입력하세요"
+            />
+          </Form.Group>
+          <Form.Group className="mb-3">
+            <Form.Label>등록자 아이디</Form.Label>
+            <Form.Control
+              type="text"
+              name="registerId"
+              value={this.state.registerId}
+              onChange={this.handleChange}
+              placeholder="아이디를 입력하세요"
             />
           </Form.Group>
           <Form.Group className="mb-3">
@@ -115,6 +160,7 @@ class Write extends Component<IProps> {
         <Button variant="secondary" onClick={this.props.handleCancel}>
           취소
         </Button>
+        <Reply replyList={replyList}/>
       </div>
     );
   }

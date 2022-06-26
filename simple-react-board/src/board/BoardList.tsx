@@ -58,12 +58,14 @@ class BoardList extends Component<IProps> {
     this.state = {
       boardList: [],
       checkList: [],
+      detailVisible: false,
     };
   }
 
   state = {
     boardList: [],
     checkList: [],
+    detailVisible: false,
   };
 
   /**
