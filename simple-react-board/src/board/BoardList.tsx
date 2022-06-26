@@ -155,7 +155,7 @@ class BoardList extends Component<IProps> {
             this.props.handleModify(this.state.checkList);
           }}
         >수정하기</Button>
-        <Button variant="danger">삭제하기</Button>
+        {/* <Button variant="danger">삭제하기</Button> */}
       </div>
     );
   }

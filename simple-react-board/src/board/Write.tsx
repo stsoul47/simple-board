@@ -92,6 +92,19 @@ class Write extends Component<IProps> {
         console.error(e);
       });
   };
+  
+  delete=()=>{
+    axios.delete(config.BaseUrl + 'delete-board', {
+      data:{
+        BOARD_ID: this.props.boardId,
+        BOARD_PWD: this.state.password
+      }
+    }).then((res)=>{
+      console.log("삭제 성공", res);
+    })
+    .catch((error)=>{console.error(error)})
+  }
+
 
   handleChange = (e: any) => {
     this.setState({
@@ -159,6 +172,7 @@ class Write extends Component<IProps> {
         <Button variant="info" onClick={this.props.isModifyMode ? this.update : this.write}>
           작성완료
         </Button>
+        <Button variant="danger" onClick={this.delete}>삭제하기</Button> 
         <Button variant="secondary" onClick={this.props.handleCancel}>
           취소
         </Button>
