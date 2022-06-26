@@ -56,6 +56,7 @@ class App extends Component {
           handleModify={this.handleModify}
           renderComplete={this.renderComplete}
         ></BoardList>
+        <hr />
         <Write
           isModifyMode={this.state.isModifyMode}
           boardId={this.state.boardId}

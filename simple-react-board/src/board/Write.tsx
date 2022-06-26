@@ -2,6 +2,7 @@ import { Component, ReactNode } from "react";
 /* import bootstrap : S */
 import Form from "react-bootstrap/Form";
 import Button from 'react-bootstrap/Button';
+import Badge from 'react-bootstrap/Badge';
 
 import axios from 'axios';
 import config from '../config/config'
@@ -111,7 +112,8 @@ class Write extends Component<IProps> {
     const { replyList }: { replyList: any } = this.state;
     return (
       <div>
-        <Form>
+        <h1 style={{marginTop: '3%'}}>입력 창</h1>
+        <Form style={{width: '50%', margin: '2% 24%'}}>
           <Form.Group className="mb-3">
             <Form.Label>제목</Form.Label>
             <Form.Control
@@ -160,7 +162,8 @@ class Write extends Component<IProps> {
         <Button variant="secondary" onClick={this.props.handleCancel}>
           취소
         </Button>
-        <Reply replyList={replyList}/>
+        <hr />
+        <Reply replyList={replyList} boardId={this.props.boardId}/>
       </div>
     );
   }
